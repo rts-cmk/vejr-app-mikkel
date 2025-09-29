@@ -1,0 +1,70 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    color: #fff;
+}
+
+h1,
+figure,
+img {
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    background: linear-gradient(to right, #000000, #101015);
+}
+
+.weather-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.weather-city {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.weather-temperature {
+    font-size: 4rem;
+    font-weight: bold;
+}
+
+.weather-description {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.weather-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.weather-container img {
+    width: 100px;
+}
+
+.weather-description {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.weather-description-title,
+.weather-description-temperature {
+    font-size: 1.25rem;
+    font-weight: normal;
+    color: rgba(255, 255, 255, 0.85);
+}
