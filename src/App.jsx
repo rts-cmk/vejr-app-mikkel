@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getWeather } from "./utils/getWeather";
+import { getForecast, getWeather } from "./utils/getWeather";
 import { formatTime } from "./utils/utils";
 import useLocation from "./utils/useLocation";
 
@@ -28,6 +28,8 @@ export default function App() {
       lang: "da",
       units: "metric"
     });
+
+    setSearch("");
   };
 
   // Update params when location is available, keep default city if location fails
@@ -52,6 +54,7 @@ export default function App() {
 
   // Use getWeather hook with current params
   const { weather, loading: weatherLoading, error: weatherError } = getWeather(params);
+  const { forecast, loading: forecastLoading, error: forecastError } = getForecast(params);
 
   // Debug logging
   console.log('Location:', location);
@@ -59,12 +62,28 @@ export default function App() {
   console.log('Weather:', weather);
   console.log('Weather Loading:', weatherLoading);
   console.log('Weather Error:', weatherError);
+  console.log('Forecast:', forecast);
+  console.log('Forecast Loading:', forecastLoading);
+  console.log('Forecast Error:', forecastError);
 
-  if (location.loading || location.error || weatherLoading || weatherError) {
+  if (location.loading || location.error || weatherLoading || weatherError || forecastLoading || forecastError) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-950 text-slate-300">
+      <div className="flex flex-col gap-4 min-h-screen items-center justify-center bg-slate-950 text-slate-300">
         <p>Vi prøver at hente vejret for dig. Vent venligst...</p>
         <span className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-400 border-t-transparent" aria-label="Indlæser lokation" />
+
+        <button
+          onClick={() => {
+            setParams({
+              city: "Copenhagen",
+              lang: "da",
+              units: "metric"
+            });
+          }}
+          className="p-2 rounded-full border border-indigo-500/40 bg-indigo-500/20 px-6 text-sm font-medium text-indigo-200 transition hover:border-indigo-400 hover:text-indigo-100 focus-visible:outline-offset-2 focus-visible:outline-indigo-400"
+        >
+          Gå tilbage
+        </button>
       </div>
     );
   }
@@ -171,7 +190,17 @@ export default function App() {
               </header>
 
               <div className="grid gap-3 sm:grid-cols-2">
-                {/* add hourly forecast here */}
+                {forecast.list.slice(0, 8).map((item) => (
+                  <div key={item.dt} className="flex flex-col items-center rounded-xl border border-slate-800 bg-slate-900/80 p-3">
+                    <p className="text-xs text-slate-400">{formatTime(new Date(item.dt * 1000))}</p>
+                    <img
+                      src={`https://openweathermap.org/img/wn/${item.weather[0].icon}.png`}
+                      alt={item.weather[0].description}
+                      className="h-10 w-10 my-1"
+                    />
+                    <p className="text-base text-slate-200">{item.main.temp.toFixed(1)}°C</p>
+                  </div>
+                ))}
               </div>
             </section>
 
