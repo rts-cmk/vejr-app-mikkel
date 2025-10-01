@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getForecast, getWeather, getWeeklyForecast } from "./utils/getWeather";
+import { getForecast, getWeather } from "./utils/getWeather";
 import { formatTime, formatDate } from "./utils/utils";
 import useLocation from "./utils/useLocation";
 
@@ -55,12 +55,6 @@ export default function App() {
   // Use getWeather hook with current params
   const { weather, loading: weatherLoading, error: weatherError } = getWeather(params);
   const { forecast, loading: forecastLoading, error: forecastError } = getForecast(params);
-  const { weeklyForecast, loading: weeklyLoading, error: weeklyError } = getWeeklyForecast({
-    latitude: params.latitude ?? weather?.coord?.lat,
-    longitude: params.longitude ?? weather?.coord?.lon,
-    lang: params.lang,
-    units: params.units
-  });
 
   // Debug logging
   console.log('Location:', location);
@@ -248,30 +242,30 @@ export default function App() {
                 </button>
               </header>
               <div className="grid gap-3 sm:grid-cols-2">
-                {weeklyLoading && (
-                  <div className="rounded-xl border border-slate-800 bg-slate-900/80 p-4 text-center text-sm text-slate-400">
-                    Indlæser ugentlig forudsigelse...
-                  </div>
-                )}
-
-                {weeklyError && (
-                  <div className="rounded-xl border border-red-800/70 bg-red-900/30 p-4 text-center text-sm text-red-200">
-                    Kunne ikke hente ugentlig forudsigelse.
-                  </div>
-                )}
-
-                {weeklyForecast?.daily?.slice(0, 7).map((day) => (
-                  <div key={day.dt} className="flex flex-col items-center rounded-xl border border-slate-800 bg-slate-900/80 p-3">
-                    <p className="text-xs text-slate-400">{formatDate(new Date(day.dt * 1000))}</p>
-                    <img
-                      src={`https://openweathermap.org/img/wn/${day.weather[0].icon}.png`}
-                      alt={day.weather[0].description}
-                      className="h-10 w-10 my-1"
-                    />
-                    <p className="text-base text-slate-200">{day.temp.day.toFixed(1)}°C</p>
-                    <p className="text-xs text-slate-500">{day.temp.min.toFixed(0)}° / {day.temp.max.toFixed(0)}°</p>
-                  </div>
-                ))}
+                {(() => {
+                  // Create a map to store the first forecast for each unique date
+                  const uniqueDates = new Map();
+                  forecast.list.forEach((item) => {
+                    const dateStr = formatDate(new Date(item.dt * 1000));
+                    if (!uniqueDates.has(dateStr)) {
+                      uniqueDates.set(dateStr, item);
+                    }
+                  });
+                  return Array.from(uniqueDates.values()).map((item) => (
+                    <div
+                      key={item.dt}
+                      className="flex flex-col items-center rounded-xl border border-slate-800 bg-slate-900/80 p-3"
+                    >
+                      <p className="text-xs text-slate-400">{formatDate(new Date(item.dt * 1000))}</p>
+                      <img
+                        src={`https://openweathermap.org/img/wn/${item.weather[0].icon}.png`}
+                        alt={item.weather[0].description}
+                        className="h-10 w-10 my-1"
+                      />
+                      <p className="text-base text-slate-200">{item.main.temp.toFixed(1)}°C</p>
+                    </div>
+                  ));
+                })()}
               </div>
             </section>
           </section>
