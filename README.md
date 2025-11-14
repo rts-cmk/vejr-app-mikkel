@@ -3,6 +3,39 @@
 I denne opgave skal du lave en simpel hjemmeside, hvor man kan søge på en by og få temperaturen.  
 Du skal bruge **OpenWeatherMap (OWM) API** til at hente vejrdata fra deres servere.
 
+### How to run
+
+rename `.env.example` to `.env`
+
+insert your api key into `.env`
+
+> [!NOTE]
+> you can replace bun with npm or your desired package manager
+
+
+install dependencies
+```sh
+bun i --frozen-lockfile
+```
+
+run the app in dev
+```sh
+bun run dev
+```
+
+building
+```sh
+bun run build
+```
+
+serving
+> [!WARNING]
+> in a production environment you should use a reverse proxy like caddy or nginx
+```sh
+bun run preview
+```
+
+
 ### Trin-for-trin:
 
 1. **[Opret en gratis konto](https://home.openweathermap.org/users/sign_up)** på OWM og få en **API-nøgle**.
